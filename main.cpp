@@ -89,7 +89,22 @@ int main(int argc, char *argv[])
         if(*(pkt_data+12) == 0x08 && *(pkt_data+13) == 0x00)
             printf("IPv4\n");
         else continue;
-
+        // Source IP
+        printf("ip.sip: ");
+        for(int i=26; i<30; i++)
+        {
+            printf("%d", *(pkt_data+i));
+            if(i!=29)printf(".");
+        }
+        printf("\n");
+        // Destination IP
+        printf("ip.dip: ");
+        for(int i=30; i<34; i++)
+        {
+            printf("%d", *(pkt_data+i));
+            if(i!=33)printf(".");
+        }
+        printf("\n");
     }
 
     return(0);
