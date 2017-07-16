@@ -52,5 +52,6 @@ int main(int argc, char *argv[])
         /* And close the session */
         pcap_close(handle);
     }
+
     return(0);
 }
