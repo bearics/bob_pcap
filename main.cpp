@@ -2,6 +2,9 @@
 #include <pcap.h>
 #include <stdio.h>
 #include <netinet/in.h>
+#include <stdlib.h>
+#include <string.h>
+
 
 int main(int argc, char *argv[])
 {
@@ -20,6 +23,7 @@ int main(int argc, char *argv[])
     char timestr[16];
     time_t local_tv_sec;
     u_char buffer[9000];
+
 
   //  struct in_addr addr;
 
@@ -69,20 +73,20 @@ int main(int argc, char *argv[])
             if((i+1)%8==0) printf(" ");
             if((i+1)%16==0) printf("\n");
         } */
-        // Destination Mac Address
-        printf("eth.dmac: ");
-        for(int i=0; i<6; i++)
-        {
-            printf("%02x", *(pkt_data+i));
-            if(i!=5)printf(":");
-        }
-        printf("\n");
         // Source Mac Address
         printf("eth.smac: ");
         for(int i=6; i<12; i++)
         {
             printf("%02x", *(pkt_data+i));
             if(i!=11)printf(":");
+        }
+        printf("\n");
+        // Destination Mac Address
+        printf("eth.dmac: ");
+        for(int i=0; i<6; i++)
+        {
+            printf("%02x", *(pkt_data+i));
+            if(i!=5)printf(":");
         }
         printf("\n");
         // Check IPv4
@@ -105,6 +109,21 @@ int main(int argc, char *argv[])
             if(i!=33)printf(".");
         }
         printf("\n");
+        // Check TCP
+        if(*(pkt_data+23) == 0x06)
+            printf("TCP\n");
+        else continue;
+        // TCP Source Port
+        char temp[10];
+        long n;
+        sprintf(temp, "%s%02x%02x","0x", *(pkt_data+34), *(pkt_data+35));
+        n = strtol(temp, NULL, 16);
+        printf("tcp.sport: %d\n",n);
+        // TCP Destination Port
+        char temp2[10];
+        sprintf(temp2, "%s%02x%02x","0x", *(pkt_data+36), *(pkt_data+37));
+        n = strtol(temp2, NULL, 16);
+        printf("tcp.dport: %d\n",n);
     }
 
     return(0);
