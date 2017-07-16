@@ -15,6 +15,9 @@ int main(int argc, char *argv[])
     const u_char *packet;		/* The actual packet */
     int res;
     const u_char *pkt_data;
+    struct tm *ltime;
+    char timestr[16];
+    time_t local_tv_sec;
 
   //  struct in_addr addr;
 
@@ -46,13 +49,14 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
         return(2);
     }
-    while(1) {
-        /* Grab a packet */
-        res = pcap_next_ex(handle,  &header, &pkt_data);
-        /* Print its length */
-        //printf("Jacked a packet with length of [%d]\n", res.len);
-        /* And close the session */
-        pcap_close(handle);
+    while((res = pcap_next_ex(handle, &header, &pkt_data)) >=0 ){
+        if(res==0)
+            continue;   /* Timeout elapsed*/
+        /* convert the timestamp to readable format */
+        local_tv_sec = header->ts.tv_sec;
+        ltime=localtime(&local_tv_sec);
+        strftime(timestr, sizeof timestr, "%H:%M:%s", ltime);
+        printf("%s, %.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
     }
 
     return(0);
