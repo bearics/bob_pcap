@@ -66,13 +66,7 @@ int main(int argc, char *argv[])
         ltime=localtime(&local_tv_sec);
         strftime( timestr, sizeof timestr, "%H:%M:%S", ltime);
         printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
-        /* // Display dump
-        for(int i=0;i<header->len;i++)
-        {
-            printf("%02x ", *(pkt_data+i));
-            if((i+1)%8==0) printf(" ");
-            if((i+1)%16==0) printf("\n");
-        } */
+
         // Source Mac Address
         printf("eth.smac: ");
         for(int i=6; i<12; i++)
@@ -82,6 +76,7 @@ int main(int argc, char *argv[])
         }
         printf("\n");
         // Destination Mac Address
+        printf("================================================\n");
         printf("eth.dmac: ");
         for(int i=0; i<6; i++)
         {
@@ -91,7 +86,7 @@ int main(int argc, char *argv[])
         printf("\n");
         // Check IPv4
         if(*(pkt_data+12) == 0x08 && *(pkt_data+13) == 0x00)
-            printf("IPv4\n");
+            printf("----------------------IPv4----------------------\n");
         else continue;
         // Source IP
         printf("ip.sip: ");
@@ -111,7 +106,7 @@ int main(int argc, char *argv[])
         printf("\n");
         // Check TCP
         if(*(pkt_data+23) == 0x06)
-            printf("TCP\n");
+            printf("----------------------TCP-----------------------\n");
         else continue;
         // TCP Source Port
         char temp[10];
@@ -124,6 +119,15 @@ int main(int argc, char *argv[])
         sprintf(temp2, "%s%02x%02x","0x", *(pkt_data+36), *(pkt_data+37));
         n = strtol(temp2, NULL, 16);
         printf("tcp.dport: %d\n",n);
+        // Display Data
+        printf("---------------------Data-----------------------\n");
+        for(int i=66;i<header->len;i++)
+        {
+            printf("%02x ", *(pkt_data+i));
+            if((i+1)%8==0) printf(" ");
+            if((i+1)%16==0) printf("\n");
+        }
+        printf("\n");
     }
 
     return(0);
