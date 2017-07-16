@@ -49,14 +49,18 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
         return(2);
     }
-    while((res = pcap_next_ex(handle, &header, &pkt_data)) >=0 ){
-        if(res==0)
-            continue;   /* Timeout elapsed*/
+    while((res = pcap_next_ex( handle, &header, &pkt_data)) >= 0){
+
+        if(res == 0)
+            /* Timeout elapsed */
+            continue;
+
         /* convert the timestamp to readable format */
         local_tv_sec = header->ts.tv_sec;
         ltime=localtime(&local_tv_sec);
-        strftime(timestr, sizeof timestr, "%H:%M:%s", ltime);
-        printf("%s, %.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
+        strftime( timestr, sizeof timestr, "%H:%M:%S", ltime);
+
+        printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
     }
 
     return(0);
