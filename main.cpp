@@ -120,8 +120,10 @@ int main(int argc, char *argv[])
         // Display Data
         printf("---------------------Data-----------------------\n");
         printf("                  ");
-        for(int i=54;i<header->len;i++)
-        {
+        char temp3[10];
+        sprintf(temp3, "%s%02x","0x",*(pkt_data+46));
+        for(int i=34+((int)strtol(temp3,NULL,16)/4);i<header->len;i++)
+            {
             printf("%02x ", *(pkt_data+i));
             if((i+1)%8==0) printf(" ");
             if((i+1)%16==0) printf("\n");
