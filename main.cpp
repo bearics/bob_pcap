@@ -5,7 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-
 int main(int argc, char *argv[])
 {
     pcap_t *handle;			/* Session handle */
@@ -65,8 +64,8 @@ int main(int argc, char *argv[])
         local_tv_sec = header->ts.tv_sec;
         ltime=localtime(&local_tv_sec);
         strftime( timestr, sizeof timestr, "%H:%M:%S", ltime);
+        printf("================================================\n");
         printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
-
         // Source Mac Address
         printf("eth.smac: ");
         for(int i=6; i<12; i++)
@@ -76,7 +75,6 @@ int main(int argc, char *argv[])
         }
         printf("\n");
         // Destination Mac Address
-        printf("================================================\n");
         printf("eth.dmac: ");
         for(int i=0; i<6; i++)
         {
@@ -121,7 +119,8 @@ int main(int argc, char *argv[])
         printf("tcp.dport: %d\n",n);
         // Display Data
         printf("---------------------Data-----------------------\n");
-        for(int i=66;i<header->len;i++)
+        printf("                  ");
+        for(int i=54;i<header->len;i++)
         {
             printf("%02x ", *(pkt_data+i));
             if((i+1)%8==0) printf(" ");
