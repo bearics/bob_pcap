@@ -2,50 +2,8 @@
 #include <pcap.h>
 #include <stdio.h>
 #include <netinet/in.h>
-
-void hexDump(void *addr, int len)
-{
-    int i;
-    unsigned char buff[17];
-    unsigned char *pc = (unsigned char*)addr;
-
-
-
-    // Process every byte in the data.
-    for (i = 0; i < len; i++) {
-        // Multiple of 16 means new line (with line offset).
-
-        if ((i % 16) == 0) {
-            // Just don't print ASCII for the zeroth line.
-            if (i != 0)
-                printf("  %s\n", buff);
-
-            // Output the offset.
-            printf("  %04x ", i);
-        }
-
-        // Now the hex code for the specific character.
-        printf(" %02x", pc[i]);
-
-        // And store a printable ASCII character for later.
-        if ((pc[i] < 0x20) || (pc[i] > 0x7e)) {
-            buff[i % 16] = '.';
-        } else {
-            buff[i % 16] = pc[i];
-        }
-
-        buff[(i % 16) + 1] = '\0';
-    }
-
-    // Pad out last line if not exactly 16 characters.
-    while ((i % 16) != 0) {
-        printf("   ");
-        i++;
-    }
-
-    // And print the final ASCII bit.
-    printf("  %s\n", buff);
-}
+#include <stdlib.h>
+#include <string.h>
 
 int main(int argc, char *argv[])
 {
@@ -64,6 +22,7 @@ int main(int argc, char *argv[])
     char timestr[16];
     time_t local_tv_sec;
     u_char buffer[9000];
+
 
   //  struct in_addr addr;
 
@@ -105,8 +64,71 @@ int main(int argc, char *argv[])
         local_tv_sec = header->ts.tv_sec;
         ltime=localtime(&local_tv_sec);
         strftime( timestr, sizeof timestr, "%H:%M:%S", ltime);
+        printf("================================================\n");
         printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
-        hexDump(&pkt_data, header->len);
+        // Source Mac Address
+        printf("eth.smac: ");
+        for(int i=6; i<12; i++)
+        {
+            printf("%02x", *(pkt_data+i));
+            if(i!=11)printf(":");
+        }
+        printf("\n");
+        // Destination Mac Address
+        printf("eth.dmac: ");
+        for(int i=0; i<6; i++)
+        {
+            printf("%02x", *(pkt_data+i));
+            if(i!=5)printf(":");
+        }
+        printf("\n");
+        // Check IPv4
+        if(*(pkt_data+12) == 0x08 && *(pkt_data+13) == 0x00)
+            printf("----------------------IPv4----------------------\n");
+        else continue;
+        // Source IP
+        printf("ip.sip: ");
+        for(int i=26; i<30; i++)
+        {
+            printf("%d", *(pkt_data+i));
+            if(i!=29)printf(".");
+        }
+        printf("\n");
+        // Destination IP
+        printf("ip.dip: ");
+        for(int i=30; i<34; i++)
+        {
+            printf("%d", *(pkt_data+i));
+            if(i!=33)printf(".");
+        }
+        printf("\n");
+        // Check TCP
+        if(*(pkt_data+23) == 0x06)
+            printf("----------------------TCP-----------------------\n");
+        else continue;
+        // TCP Source Port
+        char temp[10];
+        long n;
+        sprintf(temp, "%s%02x%02x","0x", *(pkt_data+34), *(pkt_data+35));
+        n = strtol(temp, NULL, 16);
+        printf("tcp.sport: %d\n",n);
+        // TCP Destination Port
+        char temp2[10];
+        sprintf(temp2, "%s%02x%02x","0x", *(pkt_data+36), *(pkt_data+37));
+        n = strtol(temp2, NULL, 16);
+        printf("tcp.dport: %d\n",n);
+        // Display Data
+        printf("---------------------Data-----------------------\n");
+        printf("                  ");
+        char temp3[10];
+        sprintf(temp3, "%s%02x","0x",*(pkt_data+46));
+        for(int i=34+((int)strtol(temp3,NULL,16)/4);i<header->len;i++)
+            {
+            printf("%02x ", *(pkt_data+i));
+            if((i+1)%8==0) printf(" ");
+            if((i+1)%16==0) printf("\n");
+        }
+        printf("\n");
     }
 
     return(0);
