@@ -119,9 +119,9 @@ int main(int argc, char *argv[])
         printf("tcp.dport: %d\n",n);
         // Display Data
         printf("---------------------Data-----------------------\n");
-        printf("                  ");
         char temp3[10];
         sprintf(temp3, "%s%02x","0x",*(pkt_data+46));
+        for(int i=0;i<((34+((int)strtol(temp3,NULL,16)/4))%16);i++) printf("   ");
         for(int i=34+((int)strtol(temp3,NULL,16)/4);i<header->len;i++)
             {
             printf("%02x ", *(pkt_data+i));
