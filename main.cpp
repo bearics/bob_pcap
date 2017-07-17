@@ -23,9 +23,6 @@ int main(int argc, char *argv[])
     time_t local_tv_sec;
     u_char buffer[9000];
 
-
-  //  struct in_addr addr;
-
     /* Define the device */
     dev = pcap_lookupdev(errbuf);
     if (dev == NULL) {
@@ -130,6 +127,5 @@ int main(int argc, char *argv[])
         }
         printf("\n");
     }
-
     return(0);
 }
