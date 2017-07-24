@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 
 
     int res;
-    const u_char *pkt_data;
+    const u_char *pkt;
     struct tm *ltime;
     char timestr[16];
     time_t local_tv_sec;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
         fprintf(stderr, "Couldn't install filter %s: %s\n", filter_exp, pcap_geterr(handle));
         return(2);
     }
-    while((res = pcap_next_ex( handle, &header, &pkt_data)) >= 0){
+    while((res = pcap_next_ex( handle, &header, &pkt)) >= 0){
 
         if(res == 0)
             /* Timeout elapsed */
@@ -75,56 +75,11 @@ int main(int argc, char *argv[])
         printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
 
         /* Print Ether Mac Address*/
-        eth=(struct ether_header*)pkt_data;
+        eth=(struct ether_header*)pkt;
         printf("eth.dmac: %s\n",ether_ntoa(((ether_addr*)eth->ether_dhost)));
         printf("eth.smac: %s\n",ether_ntoa(((ether_addr*)eth->ether_shost)));
 
-        // Check IPv4
-        if(*(pkt_data+12) == 0x08 && *(pkt_data+13) == 0x00)
-            printf("----------------------IPv4----------------------\n");
-        else continue;
-        // Source IP
-        printf("ip.sip: ");
-        for(int i=26; i<30; i++)
-        {
-            printf("%d", *(pkt_data+i));
-            if(i!=29)printf(".");
-        }
-        printf("\n");
-        // Destination IP
-        printf("ip.dip: ");
-        for(int i=30; i<34; i++)
-        {
-            printf("%d", *(pkt_data+i));
-            if(i!=33)printf(".");
-        }
-        printf("\n");
-        // Check TCP
-        if(*(pkt_data+23) == 0x06)
-            printf("----------------------TCP-----------------------\n");
-        else continue;
-        // TCP Source Port
-        char temp[10];
-        long n;
-        sprintf(temp, "%s%02x%02x","0x", *(pkt_data+34), *(pkt_data+35));
-        n = strtol(temp, NULL, 16);
-        printf("tcp.sport: %d\n",n);
-        // TCP Destination Port
-        char temp2[10];
-        sprintf(temp2, "%s%02x%02x","0x", *(pkt_data+36), *(pkt_data+37));
-        n = strtol(temp2, NULL, 16);
-        printf("tcp.dport: %d\n",n);
-        // Display Data
-        printf("---------------------Data-----------------------\n");
-        char temp3[10];
-        sprintf(temp3, "%s%02x","0x",*(pkt_data+46));
-        for(int i=0;i<((34+((int)strtol(temp3,NULL,16)/4))%16);i++) printf("   ");
-        for(int i=34+((int)strtol(temp3,NULL,16)/4);i<header->len;i++)
-            {
-            printf("%02x ", *(pkt_data+i));
-            if((i+1)%8==0) printf(" ");
-            if((i+1)%16==0) printf("\n");
-        }
+
         printf("\n");
     }
     return(0);
