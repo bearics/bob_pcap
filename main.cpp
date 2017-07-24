@@ -45,11 +45,11 @@ int main(int argc, char *argv[])
         net = 0;
         mask = 0;
     }
-    printf("Device is %s\n", dev);
+    printf("Device is %s\n", "dum0");
     /* Open the session in promiscuous mode */
-    handle = pcap_open_live(dev, BUFSIZ, 1, 1000, errbuf);
+    handle = pcap_open_live("dum0", BUFSIZ, 1, 1000, errbuf);
     if (handle == NULL) {
-        fprintf(stderr, "Couldn't open device %s: %s\n", dev, errbuf);
+        fprintf(stderr, "Couldn't open device %s: %s\n", "dum0", errbuf);
         return(2);
     }
     /* Compile and apply the filter */
@@ -73,22 +73,12 @@ int main(int argc, char *argv[])
         strftime( timestr, sizeof timestr, "%H:%M:%S", ltime);
         printf("================================================\n");
         printf("%s,%.6d len:%d\n", timestr, header->ts.tv_usec, header->len);
-        // Source Mac Address
-        printf("eth.smac: ");
-        for(int i=6; i<12; i++)
-        {
-            printf("%02x", *(pkt_data+i));
-            if(i!=11)printf(":");
-        }
-        printf("\n");
-        // Destination Mac Address
-        printf("eth.dmac: ");
-        for(int i=0; i<6; i++)
-        {
-            printf("%02x", *(pkt_data+i));
-            if(i!=5)printf(":");
-        }
-        printf("\n");
+
+        /* Print Ether Mac Address*/
+        eth=(struct ether_header*)pkt_data;
+        printf("eth.dmac: %s\n",ether_ntoa(((ether_addr*)eth->ether_dhost)));
+        printf("eth.smac: %s\n",ether_ntoa(((ether_addr*)eth->ether_shost)));
+
         // Check IPv4
         if(*(pkt_data+12) == 0x08 && *(pkt_data+13) == 0x00)
             printf("----------------------IPv4----------------------\n");
