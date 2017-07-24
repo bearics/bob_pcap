@@ -19,7 +19,6 @@ int main(int argc, char *argv[])
     bpf_u_int32 mask;		/* Our netmask */
     bpf_u_int32 net;		/* Our IP */
     struct pcap_pkthdr *header;	/* The header that pcap gives us */
-    const u_char *packet;		/* The actual packet */
 
     /* ether, ip, tcp header*/
     struct ether_header *eth;
@@ -95,7 +94,6 @@ int main(int argc, char *argv[])
         /* Print TCP Port */
         printf("TCP.sport: %d\n", ntohs(tcp->th_sport));
         printf("TCP.dport: %d\n", ntohs(tcp->th_dport));
-        printf("zz : %x\n",tcp->th_off);
 
         /* Print Data */
         printf("--------------DATA--------------\n");
@@ -105,7 +103,7 @@ int main(int argc, char *argv[])
             printf("%02x ",*(pkt+i));
             if((i+1)%16==0 && i!=0)printf("\n");
         }
-
+        printf("\n");
     }
     return(0);
 }
