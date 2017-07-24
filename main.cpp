@@ -99,10 +99,11 @@ int main(int argc, char *argv[])
 
         /* Print Data */
         printf("--------------DATA--------------\n");
+        for(int i=0; i< (ETH_HLEN + (int)(*(&(ip->tos)-1))/16*5 + (tcp->th_off*4))%16; i++) printf("   ");
         for(int i = ETH_HLEN + (int)(*(&(ip->tos)-1))/16*5 + (tcp->th_off*4); i < header->len ; i++)
         {
             printf("%02x ",*(pkt+i));
-            if(i%16==0 && i!=0)printf("\n");
+            if((i+1)%16==0 && i!=0)printf("\n");
         }
 
     }
