@@ -88,9 +88,14 @@ int main(int argc, char *argv[])
         printf("IP.sip: %s\n",inet_ntop(AF_INET, &(ip->saddr), buf, INET_ADDRSTRLEN));
         printf("IP.dip: %s\n",inet_ntop(AF_INET, &(ip->daddr), buf, INET_ADDRSTRLEN));
 
+        printf("oo : %x\n", (ip->tot_len));
         /* Check TCP */
-        if(ip->protocol == IPPROTO_TCP)    continue;
-        tcp=(struct tcphdr*)(pkt+ip->tot_len);
+        if(ip->protocol != IPPROTO_TCP)    continue;
+        tcp=(struct tcphdr*)(pkt+34);
+
+        /* Print TCP Port */
+        printf("TCP.sport: %d\n", ntohs(tcp->th_sport));
+        printf("TCP.dport: %d\n", ntohs(tcp->th_dport));
 
 
     }
