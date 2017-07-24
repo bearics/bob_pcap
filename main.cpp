@@ -5,6 +5,7 @@
 #include <netinet/ether.h>
 #include <netinet/ip.h>
 #include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -31,7 +32,7 @@ int main(int argc, char *argv[])
     struct tm *ltime;
     char timestr[16];
     time_t local_tv_sec;
-    u_char buffer[9000];
+    char buf[INET_ADDRSTRLEN];
 
     /* Define the device */
     dev = pcap_lookupdev(errbuf);
@@ -79,14 +80,14 @@ int main(int argc, char *argv[])
         printf("eth.dmac: %s\n",ether_ntoa(((ether_addr*)eth->ether_dhost)));
         printf("eth.smac: %s\n",ether_ntoa(((ether_addr*)eth->ether_shost)));
 
-        // Check IPv4
+        /* Check IPv4 */
         if(ntohs(eth->ether_type) != ETHERTYPE_IP)  continue;
-        ip=(struct iphdr *)(pkt+ETH_HLEN);
+        ip=(struct iphdr*)(pkt+ETH_HLEN);
 
-        //
+        /* Print IP Address */
+        printf("IP.sip: %s\n",inet_ntop(AF_INET, &(ip->saddr), buf, INET_ADDRSTRLEN));
+        printf("IP.dip: %s\n",inet_ntop(AF_INET, &(ip->daddr), buf, INET_ADDRSTRLEN));
 
-
-        printf("\n");
     }
     return(0);
 }
