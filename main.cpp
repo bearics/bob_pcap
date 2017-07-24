@@ -2,6 +2,9 @@
 #include <pcap.h>
 #include <stdio.h>
 #include <netinet/in.h>
+#include <netinet/ether.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -16,6 +19,13 @@ int main(int argc, char *argv[])
     bpf_u_int32 net;		/* Our IP */
     struct pcap_pkthdr *header;	/* The header that pcap gives us */
     const u_char *packet;		/* The actual packet */
+
+    /* ether, ip, tcp header*/
+    struct ether_header *eth;
+    struct iphdr *ip;
+    struct tcphdr *tcp;
+
+
     int res;
     const u_char *pkt_data;
     struct tm *ltime;
