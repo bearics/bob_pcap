@@ -79,6 +79,12 @@ int main(int argc, char *argv[])
         printf("eth.dmac: %s\n",ether_ntoa(((ether_addr*)eth->ether_dhost)));
         printf("eth.smac: %s\n",ether_ntoa(((ether_addr*)eth->ether_shost)));
 
+        // Check IPv4
+        if(ntohs(eth->ether_type) != ETHERTYPE_IP)  continue;
+        ip=(struct iphdr *)(pkt+ETH_HLEN);
+
+        //
+
 
         printf("\n");
     }
