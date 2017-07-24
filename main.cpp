@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
         printf("TCP.sport: %d\n", ntohs(tcp->th_sport));
         printf("TCP.dport: %d\n", ntohs(tcp->th_dport));
         printf("zz : %x\n",tcp->th_off);
+
         /* Print Data */
         printf("--------------DATA--------------\n");
         for(int i = ETH_HLEN + (int)(*(&(ip->tos)-1))/16*5 + (tcp->th_off*4); i < header->len ; i++)
@@ -103,6 +104,7 @@ int main(int argc, char *argv[])
             printf("%02x ",*(pkt+i));
             if(i%16==0 && i!=0)printf("\n");
         }
+
     }
     return(0);
 }
