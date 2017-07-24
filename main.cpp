@@ -88,6 +88,11 @@ int main(int argc, char *argv[])
         printf("IP.sip: %s\n",inet_ntop(AF_INET, &(ip->saddr), buf, INET_ADDRSTRLEN));
         printf("IP.dip: %s\n",inet_ntop(AF_INET, &(ip->daddr), buf, INET_ADDRSTRLEN));
 
+        /* Check TCP */
+        if(ip->protocol == IPPROTO_TCP)    continue;
+        tcp=(struct tcphdr*)(pkt+ip->tot_len);
+
+
     }
     return(0);
 }
